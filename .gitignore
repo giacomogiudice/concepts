@@ -1,0 +1,8 @@
+bin/*
+build/*
+lib/*
+data/*
+Proposal/
+References/
+Report/
+.DS_Store
