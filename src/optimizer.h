@@ -1,13 +1,16 @@
-#ifndef _OPTIMIZER_H_
-#define _OPTIMIZER_H_
+#ifndef __OPTIMIZER_H__
+#define __OPTIMIZER_H__
 
 #include "alglib/stdafx.h"
 #include "alglib/optimization.h"
-#include "function.h"
+#include "function.h" 
 
 class Optimizer
 {
 private:
+	size_t N_iter;
+
+	triangleMatrix x;
 	// These variables define stopping conditions for the underlying CG algorithm.
     // They should be stringent enough in order to guarantee overall stability
     // of the outer iterations.
@@ -17,12 +20,13 @@ private:
 	alglib::minlbfgsstate state;
 	alglib::minlbfgsreport rep;
 
+	// void callback(const alglib::real_1d_array &x, double func, void *ptr);
 
 public:
-	// Optimizer();
-	// ~Optimizer();
 	void init();
 	void run();
+
+	triangleMatrix result() const;
 };
 
 #endif

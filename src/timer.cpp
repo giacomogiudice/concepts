@@ -8,8 +8,11 @@ clock_t Timer::start_time = 0;
 clock_t Timer::end_time = 0;
 
 Timer::Timer()
+{ }
+
+Timer::Timer(int number)
 {
-	start_time = clock();
+	if(number == COMMON_START) { start_time = clock(); }
 }
 
 void Timer::stop()
@@ -31,6 +34,6 @@ double Timer::getDiff() const
 ostream& operator<<(ostream &stream,Timer &t)
 {
 	t.stop();
-	stream << "<" << setw(8) << setprecision(3) << t.getDiff() << " s> ";
+	stream << setw(7) << int(round(t.getDiff())) << " s | ";
 	return stream;
 }

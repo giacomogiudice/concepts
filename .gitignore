@@ -2,6 +2,7 @@ bin/*
 build/*
 lib/*
 data/*
+!*/.gitkeep
 Proposal/
 References/
 Report/

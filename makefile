@@ -1,8 +1,8 @@
-CC = g++
-CFLAGS = -std=c++11 
-CFLAGS += -Wall			# For debugging
-#CFLAGS += -O3 			# Optimization
-#CFLAGS += -ffast-math 	# Use with care, can break everything
+CXX = g++
+CXXFLAGS = -std=c++11 
+CXXFLAGS += -march=native -mtune=native # Create code specific for the native architecture
+CXXFLAGS += -O3 						# Biggest optimization level
+#CXXFLAGS += -ffast-math 				# Use with care, can break everything
 
 LDFLAGS = -Llib -lalglib
 
@@ -19,21 +19,24 @@ LIBOBJ = $(patsubst %.cpp,$(OBJDIR)/%.o,$(LIBSRC))
 ALGLIB = lib/libalglib.a
 APP = bin/main
 
-all: $(APP)
+all: $(ALGLIB) $(APP)
 
-$(APP): $(OBJ)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $(APP)
+debug: CXXFLAGS +=  -g -Wall -DDEBUG
+debug: $(APP)
 
 lib: $(ALGLIB)
+
+$(APP): $(OBJ)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $(OBJ) -o $(APP) $(LDFLAGS)
 
 $(ALGLIB): $(LIBOBJ)
 	$(AR) -csru $@ $(LIBOBJ)
 
 $(OBJDIR)/%.o: %.cpp
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
 	$(RM) $(OBJ) $(LIBOBJ)
 
 distclean:
-	$(RM) $(APP) $(ALGLIB)
+	$(RM) $(APP) $(ALGLIB) $(OBJ) $(LIBOBJ)

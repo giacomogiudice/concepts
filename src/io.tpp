@@ -1,15 +1,11 @@
-template<class T> std::vector<std::vector<T>> IO::parseCSV(const std::string &filename) const
+template<class T> std::vector<std::vector<T>> IO::parseCSV() const
 {
 	size_t linecount = 0;
 	std::string line, cell;
 	std::stringstream linestream;
 	T value;
 	std::vector<std::vector<T>> output;
-	if(filename.empty()) 
-	{ 
-		std::cerr << "Error: no .csv file provided";
-		return output;
-	}
+	check(!filename.empty(),"No .csv file provided");
 	std::ifstream file(filename);
 	if(file.is_open())
 	{
@@ -31,7 +27,7 @@ template<class T> std::vector<std::vector<T>> IO::parseCSV(const std::string &fi
 	}
 	else
 	{
-		std::cerr << "Error: file " << filename << " cannot be opened\n";
+		log_err("File %s cannot be opened",filename.c_str());
 	}
 	return output;
 }

@@ -1,45 +1,40 @@
 #include <cmath>
-#include <cstdlib>
+#include <iostream>
 #include "function.h"
 #include "io.h"
+#include "debug.h"
+#include "timer.h"
 
 // Initialization of static members to zero or null
-size_t Function::n_ = 5, Function::N_ = 0;
+size_t Function::n = 0, Function::N_articles = 0;
+size_t Function::N_eval = 0;
 
 triangleMatrix Function::freq = "[]";
-std::vector<std::vector<size_t>> Function::spins = 
-{
-	{0,1},
-	{0,1},
-	{2,3},
-	{2,3},
-	{0,1}
-};
+std::vector<std::vector<size_t>> Function::spins = {}; 
 
 double Function::lambda_h = 0, Function::lambda_J = 0;
 
 void Function::init()
 {
-	//TODO: parse values from external file
-	// n_ = 3;
-	N_ = spins.size();
-
-	IO io;
-    std::string file = "data/testdata/spinmatrix.csv";
-    spins = io.parseCSV<size_t>(file);
-    // std::cout << parser.writeCSV(spins);
+	IO io("data/spins.csv");
+    spins = io.parseCSV<size_t>();
+    io.file("data/concepts.csv");
+    n = io.linecount();
+    N_articles = spins.size();
     computeFreq();
-	// printf("freq:%s\n", freq.tostring(2).c_str());
 
-	lambda_h = 0.00;
-	lambda_J = 0.00;
+	lambda_h = 1e-3;
+	lambda_J = 1e-3;
+	debug("n: %zu, N_articles: %zu",n,N_articles);
 }
 
 void Function::computeFreq()
 {
-	freq.setlength(n_*(n_ + 1)/2);
+	
+	freq.setlength(n*(n + 1)/2);
 	for(size_t i = 0; i < freq.length(); i++) { freq[i] = 0; }
-	for(size_t a = 0; a < N_; a++)
+
+	for(size_t a = 0; a < N_articles; a++)
 	{
 		for(size_t i = 0; i < spins[a].size(); i++)
 		{
@@ -47,25 +42,28 @@ void Function::computeFreq()
 			{
 				freq[triangleIndex(spins[a][i],spins[a][j])] += 1.0;
 			}
+			check_debug(freq[triangleIndex(i,i)] != 0, "Zero frequency in %zu", i);
 		}
 	}
-	for(size_t i = 0; i < freq.length(); i++) { freq[i] = freq[i]/N_; }
+	for(size_t i = 0; i < freq.length(); i++) { freq[i] = freq[i]/double(N_articles); }
 }
 void Function::evaluate(const triangleMatrix &x, double &func, triangleMatrix &grad, void *ptr)
 {
-	size_t i,j;
-	size_t a;
+	Timer time;
+
+	std::cout << time << "Function evaluation " <<  N_eval << std::endl;
+	N_eval++;
 	size_t d = 0; // Superindex corrisponding to index kk
 	size_t ind;
-	//initialize to zero
-	for(i = 0; i < freq.length(); i++) { grad[i] = 0; }
+	// Initialize to zero
+	for(size_t i = 0; i < freq.length(); i++) { grad[i] = 0; }
 		func = 0;
 	
 	double prod, arg;
-	for(i = 0; i < n_; i++)
+	for(size_t i = 0; i < n; i++)
 	{
 		prod = 1.0;
-		for(a = 0; a < N_; a++)
+		for(size_t a = 0; a < N_articles; a++)
 		{
 			arg = expArg(x, a, i, d);
 			prod *= 1.0 + arg;
@@ -77,22 +75,16 @@ void Function::evaluate(const triangleMatrix &x, double &func, triangleMatrix &g
 			}
 		}
 		func += log(1.0 + exp(prod)) - freq[d]*x[d] + lambda_h*x[d]*x[d];
-		grad[d] = grad[d]/N_ - freq[d] + 2.0*lambda_h*x[d];
-		for(j = 0; j < i; j++)
+		grad[d] = grad[d]/N_articles - freq[d] + 2.0*lambda_h*x[d];
+		for(size_t j = 0; j < i; j++)
 		{
 			ind = triangleIndex(i,j);
 			func += -2.0*freq[ind]*x[ind] + lambda_J*x[ind]*x[ind];
-			//double counting?
-			grad[ind] = grad[ind]/N_ - freq[ind] + 2.0*lambda_J*x[ind];
-			// func += -2.0*freq[d - j]*x[d -j] + lambda_J*x[d - j]*x[d - j];
-			// grad[d - j] = 2.0*(grad[d - j]/N_ - freq[d - j] + lambda_J*x[d - j]);
+			grad[ind] = grad[ind]/N_articles - freq[ind] + 2.0*lambda_J*x[ind];
 		} 
 		// Increment superindex for next iteration
 		d += 2 + i;
 	}
-	// printf("x:%s\n", x.tostring(2).c_str());
-	// printf("func:%f\n", func);
-	// printf("grad:%s\n",grad.tostring(2).c_str());
 }
 
 double Function::expArg(const triangleMatrix &x, size_t a, size_t i, size_t d)
@@ -107,9 +99,10 @@ double Function::expArg(const triangleMatrix &x, size_t a, size_t i, size_t d)
 
 size_t Function::triangleIndex(size_t i, size_t j)
 {
-	if(i > j) { return i*(i + 1)/2 + j; }
-	else { return j*(j + 1)/2 + i; }
+	size_t index = (i > j)? i*(i + 1)/2 + j : j*(j + 1)/2 + i; 
+	check_debug(index < freq.length(), "Index (%zu,%zu) exceeds dimensions",i,j);
+	return index;
 }
 
-size_t Function::n() { return n_; }
-size_t Function::N() { return N_; }
+size_t Function::n_concepts() { return n; }
+size_t Function::n_articles() { return N_articles; }
