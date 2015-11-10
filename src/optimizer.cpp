@@ -1,4 +1,4 @@
-#include <iostream>
+#include <sstream>
 #include "optimizer.h" 
 #include "function.h" 
 #include "debug.h" 
@@ -31,18 +31,33 @@ void Optimizer::init(const std::string &input, const std::string &concepts, cons
 		IO io(input);
 		x = io.readTriangleMatrix();
 		check(x.length() == x_length, "Number of parameters read does not match number of concepts.") 
-		std::cout << x.tostring(2);
 	}
 }
 
-void Optimizer::run()
+std::string Optimizer::run()
 {
+	N_iter = 1;
 	minlbfgscreate(1, x, state);
 	minlbfgssetcond(state, epsg, epsf, epsx, maxits);
 	minlbfgsoptimize(state,Function::evaluate);
 	minlbfgsresults(state, x, rep);
 
-	log_info("Termination code %d in %i iterations", int(rep.terminationtype), int(rep.iterationscount));
+	std::ostringstream oss;
+	switch(int(rep.terminationtype))
+	{
+		case -8: oss << "NaN or infinite values detected."; break;
+		case -7: oss << "Gradient verification failed."; break;
+		case -2: oss << "NaN or infinite values detected."; break;
+		case 1: oss << "Condition met on EpsF."; break;
+		case 2: oss << "Condition met on EpsX."; break;
+		case 4: oss << "Condition met on EpsG."; break;
+		case 5: oss << "Maximum number of iterations attained."; break;
+		case 7: oss << "Stopping conditions are too stringent."; break;
+		case 8: oss << "Terminated by user"; break;
+		default: oss << "Unknown return value" << rep.terminationtype; 
+	}
+	oss <<  " Iterations: " << N_iter <<  "\n";
+	return oss.str();
 }
 
 triangleMatrix Optimizer::result() const

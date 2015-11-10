@@ -1,7 +1,7 @@
-concepts_list	data/testdata/concepts.csv
-spin_matrix 	data/testdata/random.csv
-input			data/testdata/output.csv
-output 			data/testdata/output.csv
+concepts_list	data/concepts.csv
+spin_matrix 	data/spins.csv
+input			data/output.csv
+output 			data/input.csv
 eps_f 			0
 eps_g 			1e-8
 eps_x 			0

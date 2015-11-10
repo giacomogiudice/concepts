@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 	int maxIts = 0;
 	double lambda_h = 0, lambda_J = 0;
 
-	cout << "Enter parameter name and their valued\n";
+	cout << "Enter parameter name and their value separated by a space\n";
 	string key, value;
 	while(!cin.eof())
 	{
@@ -45,7 +45,8 @@ int main(int argc, char **argv)
 
     cout << time << "Data loaded and frequecies computed\n";
 
-    // simulation.run();
+    string report =  simulation.run();
+    cout << time << report;
 
     cout << time << "Optimization done. Writing to file\n";
 

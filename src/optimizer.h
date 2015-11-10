@@ -1,6 +1,7 @@
 #ifndef __OPTIMIZER_H__
 #define __OPTIMIZER_H__
 
+#include <string>
 #include "alglib/stdafx.h"
 #include "alglib/optimization.h"
 #include "function.h" 
@@ -27,7 +28,7 @@ public:
 
 	void init(const std::string &input, const std::string &concepts, const std::string &spins,
 				double lambda_h, double lambda_J);
-	void run();
+	std::string run();
 
 	triangleMatrix result() const;
 };
