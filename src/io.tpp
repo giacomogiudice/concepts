@@ -39,9 +39,9 @@ template< class T> std::string IO::writeCSV(const std::vector<std::vector<T>> v)
 	{
 		for(int j = 0; j < v[i].size(); j++)
 		{
-			output.append(std::to_string(v[i][j]) + delimiter);
+			output.append(std::to_string(v[i][j]));
+			if(j < v[i].size() - 1) { output.push_back(delimiter); }
 		}
-		output.pop_back();
 		output.push_back('\n');
 	}
 	return output;

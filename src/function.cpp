@@ -14,17 +14,17 @@ std::vector<std::vector<size_t>> Function::spins = {};
 
 double Function::lambda_h = 0, Function::lambda_J = 0;
 
-void Function::init()
+void Function::init(const std::string &conceptsfile, const std::string &spinsfile, double lambda_h, double lambda_J)
 {
-	IO io("data/spins.csv");
+	IO io(spinsfile);
     spins = io.parseCSV<size_t>();
-    io.file("data/concepts.csv");
+    io.file(conceptsfile);
     n = io.linecount();
     N_articles = spins.size();
     computeFreq();
 
-	lambda_h = 1e-3;
-	lambda_J = 1e-3;
+	Function::lambda_h = lambda_h;
+	Function::lambda_J = lambda_J;
 	debug("n: %zu, N_articles: %zu",n,N_articles);
 }
 
@@ -51,8 +51,8 @@ void Function::evaluate(const triangleMatrix &x, double &func, triangleMatrix &g
 {
 	Timer time;
 
-	std::cout << time << "Function evaluation " <<  N_eval << std::endl;
-	N_eval++;
+	std::cout << time << "Start function evaluation " <<  N_eval << std::endl;
+	
 	size_t d = 0; // Superindex corrisponding to index kk
 	size_t ind;
 	// Initialize to zero
@@ -85,6 +85,8 @@ void Function::evaluate(const triangleMatrix &x, double &func, triangleMatrix &g
 		// Increment superindex for next iteration
 		d += 2 + i;
 	}
+	std::cout << time << "Ended function evaluation " <<  N_eval << std::endl;
+	N_eval++;
 }
 
 double Function::expArg(const triangleMatrix &x, size_t a, size_t i, size_t d)

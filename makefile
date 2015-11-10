@@ -21,7 +21,7 @@ APP = bin/main
 
 all: $(ALGLIB) $(APP)
 
-debug: CXXFLAGS +=  -g -Wall -DDEBUG
+debug: CXXFLAGS +=  -g -Wall -pedantic -DDEBUG
 debug: $(APP)
 
 lib: $(ALGLIB)

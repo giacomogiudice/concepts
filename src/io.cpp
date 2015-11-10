@@ -1,6 +1,7 @@
 #include <algorithm> 
-#include <string> 
+#include <string>
 #include "io.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -50,7 +51,7 @@ size_t IO::linecount() const
 	return linecount;
 }
 
-void IO::writeTriangleMatrix(const triangleMatrix &x)
+void IO::writeTriangleMatrix(const triangleMatrix &x) const
 {
 	check(!filename.empty(),"No .csv file provided");
 	ofstream file(filename);
@@ -74,4 +75,23 @@ void IO::writeTriangleMatrix(const triangleMatrix &x)
 	}
 	file << x[i + 1];
 	file.close();
+}
+
+triangleMatrix IO::readTriangleMatrix() const
+{
+	vector<vector<double>> data = parseCSV<double>();
+	triangleMatrix output;
+	const size_t n = data.size();
+	output.setlength(n*(n + 1)/2);
+	size_t d = 0;
+	for(size_t i = 0; i < n; i++)
+	{
+		if(data[i].size() != i + 1) { log_err("Dimensions of %s are not correct."); return output; }
+		for(size_t j = 0; j < data[i].size(); j++)
+		{
+			output[d] = data[i][j];
+			d++;
+		}
+	}
+	return output;
 }

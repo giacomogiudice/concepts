@@ -34,6 +34,13 @@ double Timer::getDiff() const
 ostream& operator<<(ostream &stream,Timer &t)
 {
 	t.stop();
-	stream << setw(7) << int(round(t.getDiff())) << " s | ";
+	int seconds = round(t.getDiff());
+	int minutes =  seconds/60;
+	int hours = minutes/60;
+	minutes = minutes%60;
+	seconds = seconds%60;
+	stream << setw(4) << hours << ":" << std::setfill('0')
+		   << setw(2) << minutes << ":"
+		   << setw(2)<< seconds << " " << setfill(' ');
 	return stream;
 }

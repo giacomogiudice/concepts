@@ -18,7 +18,7 @@ private:
 	static double expArg(const triangleMatrix &x, size_t a, size_t i, size_t d);
 
 public:
-	static void init();
+	static void init(const std::string &conceptsfile, const std::string &spinsfile, double lambda_h = 0, double lambda_J = 0);
 	static size_t triangleIndex(size_t i, size_t j);
 
 	static void evaluate(const triangleMatrix &x, double &func, triangleMatrix &grad, void *ptr);

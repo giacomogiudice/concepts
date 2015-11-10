@@ -1,0 +1,10 @@
+concepts_list	data/testdata/concepts.csv
+spin_matrix 	data/testdata/random.csv
+input			data/testdata/output.csv
+output 			data/testdata/output.csv
+eps_f 			0
+eps_g 			1e-8
+eps_x 			0
+max_iterations 	100
+lambda_h		0
+lambda_J		0

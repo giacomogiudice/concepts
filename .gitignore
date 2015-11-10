@@ -3,6 +3,7 @@ build/*
 lib/*
 data/*
 !*/.gitkeep
+img/
 Proposal/
 References/
 Report/

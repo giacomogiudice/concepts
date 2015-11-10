@@ -23,7 +23,10 @@ private:
 	// void callback(const alglib::real_1d_array &x, double func, void *ptr);
 
 public:
-	void init();
+	Optimizer(double epsG, double epsF, double epsX, int maxIts = 0);
+
+	void init(const std::string &input, const std::string &concepts, const std::string &spins,
+				double lambda_h, double lambda_J);
 	void run();
 
 	triangleMatrix result() const;
