@@ -50,10 +50,10 @@ std::string Optimizer::run()
 		case 4: oss << "Condition met on EpsG."; break;
 		case 5: oss << "Maximum number of iterations attained."; break;
 		case 7: oss << "Stopping conditions are too stringent."; break;
-		case 8: oss << "Terminated by user"; break;
-		default: oss << "Unknown return value" << rep.terminationtype; 
+		case 8: oss << "Terminated by user."; break;
+		default: oss << "Unknown return value " << rep.terminationtype << "."; 
 	}
-	oss << "\n";
+	oss << " Total iterations: " << rep.IterationsCount << "\n";
 	return oss.str();
 }
 

@@ -81,7 +81,7 @@ void Function::evaluate(const triangleMatrix &x, double &func, triangleMatrix &g
 		d += 2 + i;
 
 	}
-	std::cout << time << "Ended function evaluation " <<  N_eval  << ". F = " << func << std::endl;
+	std::cout << time << "Ended function evaluation " <<  N_eval << std::endl;
 	N_eval++;
 }
 
