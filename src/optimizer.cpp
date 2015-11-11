@@ -53,7 +53,7 @@ std::string Optimizer::run()
 		case 8: oss << "Terminated by user."; break;
 		default: oss << "Unknown return value " << rep.terminationtype << "."; 
 	}
-	oss << " Total iterations: " << rep.IterationsCount << "\n";
+	oss << " Total iterations: " << rep.iterationscount << "\n";
 	return oss.str();
 }
 
