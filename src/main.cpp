@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     simulation.init(input,concepts,spins,lambda_h,lambda_J);
 
     cout << time << "Data loaded and frequecies computed\n";
-
+    cout << time << "Starting optimization\n";
     string report =  simulation.run();
     cout << time << report;
 

@@ -1,9 +1,9 @@
 concepts_list	data/concepts.csv
-spin_matrix 	data/spins.csv
-input			data/output.csv
-output 			data/input.csv
-eps_f 			0
-eps_g 			1e-8
+spin_matrix 	data/random.csv
+input 			data/input.csv
+output 			data/output.csv
+eps_f 			1e-6
+eps_g 			0
 eps_x 			0
 max_iterations 	100
 lambda_h		0

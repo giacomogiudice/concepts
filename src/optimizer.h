@@ -9,7 +9,6 @@
 class Optimizer
 {
 private:
-	size_t N_iter;
 
 	triangleMatrix x;
 	// These variables define stopping conditions for the underlying CG algorithm.

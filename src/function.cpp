@@ -42,7 +42,6 @@ void Function::computeFreq()
 			{
 				freq[triangleIndex(spins[a][i],spins[a][j])] += 1.0;
 			}
-			check_debug(freq[triangleIndex(i,i)] != 0, "Zero frequency in %zu", i);
 		}
 	}
 	for(size_t i = 0; i < freq.length(); i++) { freq[i] = freq[i]/double(N_articles); }
@@ -50,59 +49,58 @@ void Function::computeFreq()
 void Function::evaluate(const triangleMatrix &x, double &func, triangleMatrix &grad, void *ptr)
 {
 	Timer time;
-
-	std::cout << time << "Start function evaluation " <<  N_eval << std::endl;
 	
-	size_t d = 0; // Superindex corrisponding to index kk
-	size_t ind;
-	// Initialize to zero
+	size_t d = 0, subd; // Superindexes corrisponding to diagonal index kk and subdiagonal kj
+	// Initialize  return values to zero
 	for(size_t i = 0; i < freq.length(); i++) { grad[i] = 0; }
-		func = 0;
-	
-	double prod, arg;
+	func = 0;
+
+	double sum, expterm;
 	for(size_t i = 0; i < n; i++)
 	{
-		prod = 1.0;
+		sum = 0;
 		for(size_t a = 0; a < N_articles; a++)
 		{
-			arg = expArg(x, a, i, d);
-			prod *= 1.0 + arg;
-			grad[d] += exp(arg)/(1.0 + exp(arg));
+			expterm = expTerm(x, a, i, d);
+			sum += log(1.0 + expterm);
+			grad[d] += expterm/(1.0 + expterm);
 			for(auto s : spins[a])
 			{
-				if(s < i) { grad[triangleIndex(s,i)] += exp(arg)/(1.0 + exp(arg)); }
-
+				if(s < i) { grad[triangleIndex(i,s)] += expterm/(1.0 + expterm); }
 			}
 		}
-		func += log(1.0 + exp(prod)) - freq[d]*x[d] + lambda_h*x[d]*x[d];
+		func += sum/N_articles - freq[d]*x[d] + lambda_h*x[d]*x[d];
 		grad[d] = grad[d]/N_articles - freq[d] + 2.0*lambda_h*x[d];
 		for(size_t j = 0; j < i; j++)
 		{
-			ind = triangleIndex(i,j);
-			func += -2.0*freq[ind]*x[ind] + lambda_J*x[ind]*x[ind];
-			grad[ind] = grad[ind]/N_articles - freq[ind] + 2.0*lambda_J*x[ind];
+			subd = triangleIndex(i,j);
+			func += -2.0*freq[subd]*x[subd] + lambda_J*x[subd]*x[subd];
+			grad[subd] = grad[subd]/N_articles - freq[subd] + 2.0*lambda_J*x[subd];
 		} 
 		// Increment superindex for next iteration
 		d += 2 + i;
+
 	}
-	std::cout << time << "Ended function evaluation " <<  N_eval << std::endl;
+	std::cout << time << "Ended function evaluation " <<  N_eval  << ". F = " << func << std::endl;
 	N_eval++;
 }
 
-double Function::expArg(const triangleMatrix &x, size_t a, size_t i, size_t d)
+double Function::expTerm(const triangleMatrix &x, size_t a, size_t i, size_t d)
 {
 	double arg = x[d];
 	for(auto s : spins[a])
 	{
-		if(s != i) { arg += x[triangleIndex(s,i)]; }
+		if(s > i) { arg += x[triangleIndex(s,i)]; }
+		else if(s < i) { arg += x[triangleIndex(i,s)]; }
 	}
-	return arg;
+	return exp(arg);
 }
 
 size_t Function::triangleIndex(size_t i, size_t j)
 {
-	size_t index = (i > j)? i*(i + 1)/2 + j : j*(j + 1)/2 + i; 
-	check_debug(index < freq.length(), "Index (%zu,%zu) exceeds dimensions",i,j);
+	check_debug(i >= j, "Indexing problem on (%zu,%zu), it should be i >= j",i, j)
+	size_t index = i*(i + 1)/2 + j;
+	check_debug(index < freq.length(), "Index (%zu,%zu) exceeds dimensions",i, j);
 	return index;
 }
 
