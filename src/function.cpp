@@ -47,16 +47,16 @@ void Function::computeFreq()
 	}
 	for(size_t i = 0; i < freq.length(); i++) { freq[i] = freq[i]/double(N_articles); }
 }
-void Function::evaluate(const triangleMatrix &x, double &func, triangleMatrix &grad, void *ptr)
+void Function::evaluate(const triangleMatrix &x, double &function, triangleMatrix &grad, void *ptr)
 {
 	// Initialize  return values to zero
 	for(size_t i = 0; i < freq.length(); i++) { grad[i] = 0; }
-	func = 0;
+	double func = 0;
 
 	#pragma omp parallel for reduction(+:func) schedule(static,1)
 	for(size_t i = 0; i < n; i++)
 	{
-		if(!omp_in_parallel() && i == 1) { log_warn("Not running in parallel"); }
+		if(omp_get_thread_num() == 0) { log_info("Threads %i", omp_get_num_threads()); }
 		size_t d = triangleIndex(i,i);
 		double sum = 0;
 		for(size_t a = 0; a < N_articles; a++)
@@ -78,6 +78,7 @@ void Function::evaluate(const triangleMatrix &x, double &func, triangleMatrix &g
 			grad[subd] = grad[subd]/N_articles - freq[subd] + 2.0*lambda_J*x[subd];
 		} 
 	}
+	function = func;
 	Timer time;
 	std::cout << time << "Ended function evaluation " <<  N_eval << std::endl;
 	N_eval++;

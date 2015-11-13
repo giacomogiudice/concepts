@@ -33,7 +33,7 @@ $(ALGLIB): $(LIBOBJ)
 	$(AR) -csru $@ $(LIBOBJ)
 
 $(OBJDIR)/%.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@ $(LDFLAGS)
 
 clean:
 	$(RM) $(OBJ) $(LIBOBJ)
