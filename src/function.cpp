@@ -53,10 +53,9 @@ void Function::evaluate(const triangleMatrix &x, double &function, triangleMatri
 	for(size_t i = 0; i < freq.length(); i++) { grad[i] = 0; }
 	double func = 0;
 
-	#pragma omp parallel for reduction(+:func) schedule(static,1)
+	#pragma omp parallel for reduction(+:func) schedule(dynamic)
 	for(size_t i = 0; i < n; i++)
 	{
-		if(omp_get_thread_num() == 0) { log_info("Threads %i", omp_get_num_threads()); }
 		size_t d = triangleIndex(i,i);
 		double sum = 0;
 		for(size_t a = 0; a < N_articles; a++)
