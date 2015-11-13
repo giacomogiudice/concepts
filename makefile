@@ -4,7 +4,7 @@ CXXFLAGS += -march=native -mtune=native # Create code specific for the native ar
 CXXFLAGS += -O3 						# Biggest optimization level
 #CXXFLAGS += -ffast-math 				# Use with care, can break everything
 
-LDFLAGS = -Llib -lalglib
+LDFLAGS = -Llib -lalglib -fopenmp
 
 SRCDIR = src
 LIBDIR = include/alglib

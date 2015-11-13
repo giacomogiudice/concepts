@@ -1,5 +1,6 @@
 #include <cmath>
 #include <iostream>
+#include <omp.h>
 #include "function.h"
 #include "io.h"
 #include "debug.h"
@@ -48,20 +49,19 @@ void Function::computeFreq()
 }
 void Function::evaluate(const triangleMatrix &x, double &func, triangleMatrix &grad, void *ptr)
 {
-	Timer time;
-	
-	size_t d = 0, subd; // Superindexes corrisponding to diagonal index kk and subdiagonal kj
 	// Initialize  return values to zero
 	for(size_t i = 0; i < freq.length(); i++) { grad[i] = 0; }
 	func = 0;
 
-	double sum, expterm;
+	#pragma omp parallel for reduction(+:func) schedule(static,1)
 	for(size_t i = 0; i < n; i++)
 	{
-		sum = 0;
+		if(!omp_in_parallel() && i == 1) { log_warn("Not running in parallel"); }
+		size_t d = triangleIndex(i,i);
+		double sum = 0;
 		for(size_t a = 0; a < N_articles; a++)
 		{
-			expterm = expTerm(x, a, i, d);
+			double expterm = expTerm(x, a, i, d);
 			sum += log(1.0 + expterm);
 			grad[d] += expterm/(1.0 + expterm);
 			for(auto s : spins[a])
@@ -73,14 +73,12 @@ void Function::evaluate(const triangleMatrix &x, double &func, triangleMatrix &g
 		grad[d] = grad[d]/N_articles - freq[d] + 2.0*lambda_h*x[d];
 		for(size_t j = 0; j < i; j++)
 		{
-			subd = triangleIndex(i,j);
+			size_t subd = triangleIndex(i,j);
 			func += -2.0*freq[subd]*x[subd] + lambda_J*x[subd]*x[subd];
 			grad[subd] = grad[subd]/N_articles - freq[subd] + 2.0*lambda_J*x[subd];
 		} 
-		// Increment superindex for next iteration
-		d += 2 + i;
-
 	}
+	Timer time;
 	std::cout << time << "Ended function evaluation " <<  N_eval << std::endl;
 	N_eval++;
 }
