@@ -2,6 +2,7 @@ bin/*
 build/*
 lib/*
 data/*
+matlab/*
 !*/.gitkeep
 img/
 Proposal/

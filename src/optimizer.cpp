@@ -23,6 +23,7 @@ void Optimizer::init(const std::string &input, const std::string &concepts, cons
 	if(input.empty())
 	{
 		x.setlength(x_length);
+		for(size_t i = 0; i < x_length; i++) { x[i] = 0; }
 	}
 	else
 	{
