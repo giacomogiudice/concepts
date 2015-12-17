@@ -28,7 +28,7 @@ void Optimizer::init(const std::string &input, const std::string &concepts, cons
 	else
 	{
 		IO io(input);
-		x = io.readTriangleMatrix();
+		x = io.readVector();
 		check(x.length() == x_length, "Number of parameters read does not match number of concepts.") 
 	}
 }

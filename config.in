@@ -1,5 +1,5 @@
 concepts_list	data/concepts.csv
-spin_matrix 	data/random.csv
+spin_matrix 	data/spins.csv
 input 			data/input.csv
 output 			data/output.csv
 eps_f 			1e-6

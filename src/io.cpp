@@ -50,7 +50,20 @@ size_t IO::linecount() const
 	}
 	return linecount;
 }
+void IO::writeVector(const triangleMatrix &x) const
+{
+	check(!filename.empty(),"No .csv file provided");
+	ofstream file(filename);
+	check(file.is_open(),"File %s cannot be opened", filename.c_str());
+	check(x.length() > 0, "No results to print");
 
+	for(size_t i = 0; i < x.length(); i++)
+	{
+		file << x[i] << '\n';
+	}
+
+	file.close();
+}
 void IO::writeTriangleMatrix(const triangleMatrix &x) const
 {
 	check(!filename.empty(),"No .csv file provided");
@@ -77,21 +90,15 @@ void IO::writeTriangleMatrix(const triangleMatrix &x) const
 	file.close();
 }
 
-triangleMatrix IO::readTriangleMatrix() const
+triangleMatrix IO::readVector() const
 {
 	vector<vector<double>> data = parseCSV<double>();
 	triangleMatrix output;
 	const size_t n = data.size();
-	output.setlength(n*(n + 1)/2);
-	size_t d = 0;
+	output.setlength(n);
 	for(size_t i = 0; i < n; i++)
 	{
-		if(data[i].size() != i + 1) { log_err("Dimensions of %s are not correct."); return output; }
-		for(size_t j = 0; j < data[i].size(); j++)
-		{
-			output[d] = data[i][j];
-			d++;
-		}
+		output[i] = data[i][0];
 	}
 	return output;
 }

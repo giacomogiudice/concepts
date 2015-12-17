@@ -2,10 +2,13 @@ bin/*
 build/*
 lib/*
 data/*
+untracked/*
 matlab/*
+!matlab/*.m
+tex/*
+!tex/Concepts.pdf
+!tex/Concepts.tex
+!tex/references.bib
+!tex/communities.csv
 !*/.gitkeep
-img/
-Proposal/
-References/
-Report/
 .DS_Store

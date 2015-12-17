@@ -26,8 +26,9 @@ public:
 	size_t linecount() const;
 	template<class T> std::vector<std::vector<T>> parseCSV() const;
 	template<class T> std::string writeCSV(const std::vector<std::vector<T>> v) const;
+	void writeVector(const triangleMatrix &x) const;
 	void writeTriangleMatrix(const triangleMatrix &x) const;
-	triangleMatrix readTriangleMatrix() const;
+	triangleMatrix readVector() const;
 
 };
 

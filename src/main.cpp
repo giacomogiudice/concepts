@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     cout << time << "Optimization done. Writing to file\n";
 
     IO io(output);
-    io.writeTriangleMatrix(simulation.result());
+    io.writeVector(simulation.result());
 
     cout << time << "All done\n";
 
