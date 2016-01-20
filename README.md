@@ -2,6 +2,9 @@
 by Giacomo Giudice
 
 ## Introduction
+This is a __C++__ implementation of an automated ontology learning tool to extract the relationship between concepts in scientific literature.
+For more information about the methodology see the [report](../tex/Concepts.pdf).
+
 This code was developed as the numerical support for the project _Interaction Between Concepts: A Pseudolikelihood Approach_ for the course _Computer Simulations of Physical Systems_ by Prof. Pasquarello.
 
 ## Compilation

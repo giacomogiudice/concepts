@@ -30,8 +30,7 @@
 \usepackage[vlined,linesnumbered]{algorithm2e}		% for algorithms
 \usepackage{setspace} 							% for stretching
 \usepackage{lipsum}								% for placeholder text
-\usepackage{pdfpages}
-\usepackage{csvsimple}
+\usepackage{csvsimple}							% for including .csv in tables
 
 
 \paperheight=297mm
@@ -131,8 +130,9 @@ Intuitively, concepts that often appear together in papers are related to each o
 Moreover, the ensemble of all these connections defines a network, whose structure is presently not known.
 The relation between concepts has been already explored in other domains. However, connections are typically defined a priori according to their semantic definitions, and are just binary --- namely, there is or there isn't a connection. This relation network is what we call an {\em ontology}~\cite{guarino1998}.
 
-We propose to analyze the corpus of 52979 scientific articles published in arXiv during 2013 in physics (see table~\ref{tab:cats}).
+We propose to analyze the corpus of 54198 scientific articles published in arXiv during 2013 in physics (see table~\ref{tab:cats}).
 From these papers {\em concepts} have been extracted and have passed a procedure of collaborative validation from physicists using ScienceWise\footnote{\url{http://sciencewise.info/}}.
+The number of papers with at least one article is 52979.
 We do not consider directly the correlation between concepts --- it can be trivially calculated --  but rather to try find insights about the causal ties.
 This is achieved by adapting a method of interaction--strength inference that has been recently introduced by statistical physicists and that is rapidly gaining ground in different domains such as biology, computer science, social sciences, neuroscience, etc.
 
@@ -277,7 +277,7 @@ The standard statistical approach is to maximize the {\em likelihood},
   {\cal L}(\bf h,\bf J) = \prod_{a=1}^N \P(\bf s^{(a)})
   \label{eq:likedef}
 \ee
-Indeed the likelihood of the set of parameters  $\{\bf  h,\bf J\}$ is equal to the probability of the measuring the observed outcomes given that set of parameters.
+Indeed the likelihood of the set of parameters  $\{\bf  h,\bf J\}$ is equal to the probability of measuring the observed outcomes given that set of parameters.
 A maximum likelihood estimator coincides with the most probable Bayesian estimator, assuming the set of observations is independent, i.e. there is no correlation between the different $\bf s^{(a)}$.
 For practical reasons it is much more convenient to minimize the average {\em negative log-likelihood}~\cite{eke2012}
 \be
@@ -415,7 +415,7 @@ where we write $\{s\}_{i \neq j} \equiv  \delta_{ij} + (1-\delta_{ij})s$ using t
 A {\em steepest descent} algorithm finds the minimum of a function given its gradient, which is exactly what we have in this situation, see \eq{eq:funcgrad}. 
 This technique translates $x$ of an $n$-dimensional vector along the negative gradient, i.e. where the function descends the fastest.
 The library we chose\footnote{ ALGLIB, see \url{www.alglib.net}} uses a  improved method, called L-BFGS, that stands for {\em Limited-memory  Broyden--Fletcher--Goldfarb--Shanno}.
-This algorithm keeps a history of a certain number of the previous updates to approximate the inverse hessian.
+This algorithm keeps a history of a certain number of the previous updates to approximate the inverse Hessian.
 It can therefore build a quadratic model and get a better idea of what the function looks like, hopefully converging faster towards the minimum.
 \subsection{Description}
 \begin{algorithm}
@@ -426,7 +426,7 @@ It can therefore build a quadratic model and get a better idea of what the funct
 \BlankLine
 \Begin{
   compute frequency matrix $f$\;
-  $x \asg 0$\;
+  $x \asg {\bf 0}$\;
   \While{$\neg$haltingCondition}{\label{alg:main:starteval}
     $F \asg 0$, $\grad F \asg \bf{0}$\;
     \For{$ i=1,\dots,n$}{
@@ -496,7 +496,7 @@ To read how the algorithm was implemented, see appendix~\ref{section:tech}.
 It is not simple to verify the validity of the algorithm, as the results are not something directly measurable. 
 However, one ne way of verifying the algorithm is to use a {\em random matrix} for the spins, formed by  independent random variables with a uniform distribution.
 By definition the system should have no correlations, because the spins are independent random variables.
-The corresponding Ising model will have a gaussian distribution depending on the renormalization constant $\lambda$.\footnote{From now on we set $\lambda_h = \lambda_J \equiv \lambda$. }
+The corresponding Ising model will have a Gaussian distribution depending on the renormalization constant $\lambda$.\footnote{From now on we set $\lambda_h = \lambda_J \equiv \lambda$. }
 Introducing the penalty function \eq{eq:l2norm} in the negative log-likelihood \eq{eq:nlldef}
 \be
   \ell^\prime(x) = -\frac{1}{N}\sum_{a=1}^N \( \ln \P(\bf s^{(a)}) - \lambda \| x \|^2 \) \nonumber
@@ -615,7 +615,7 @@ This is quite possible since the 'gr-qc' category is contained in \bf{other}, an
    \includegraphics[height=8cm,width=\textwidth,keepaspectratio]{../img/communities_graph.pdf}
    \includegraphics[height=8cm,width=\textwidth,keepaspectratio]{../img/categories_communities.pdf}
   }
-  \caption{{\em Left}: Visualization of the network, different communities are highlighted with different colors. {\em Right}: distribution within the different communities of the concepts associated with different categories.}
+  \caption{{\em Left}: visualization of the network, different communities are highlighted with different colors. {\em Right}: distribution within the different communities of the concepts associated with different categories.}
   \label{fig:comm}
 \end{figure}
 \begin{table}
@@ -703,117 +703,3 @@ It also has the advantage of knowing directly which terms contribute in the sum 
   \end{center}
 \end{table}
 \end{document}
-
-%
-%\section{Clustering}
-%Once our graph has been constructed, we can define the {\em distance} $d_{ij}$ between vertices $i$ and $j$ to be the length of the shortest path connecting them. 
-%The concepts correspond to the graph's vertices, which form a metric space.
-%\subsection{Rodriguez--Laio Clustering Algorithm}
-%
-%
-%The best results were obtained with the algorithm proposed by Rodriguez \& Laio~\cite{rodriguezlaio2014},  that we refer to as the {\em RL algorithm}.
-%We implement a variant of this algorithm that works with our specific metric and --- since the concept graph is very tightly connected --- we choose a weaker criterion than the robust assignation.
-%
-%A excellent description of the algorithm is provided in~\cite{rodriguezlaio2014}.
-%Just as an overview, the key quantities defined for each vertex is the {\em local density} $\rho$  and the {\em distance to higher density} $\delta$
-%\begin{subequations}
-%  \begin{align}
-%    \rho_i &= \sum_j \chi(d_c - d_{ij}) \\
-%    \delta_i &=  \displaystyle \min_{j: \rho_j > \rho_i}d_{ij}
-%  \end{align}
-%  \label{eq:rhodelta}
-%\end{subequations}
-%where $d_c$ is the cutoff distance, that we set to 1 so as to consider only nearest neighbours.
-%$\chi$ is the indicator function, such that $\chi(x) = 1$ if $x \geq 0$ and 0 otherwise.
-%
-%The mechanism behind the RL algorithm is the identification of the cluster centers as the points that stand out with high values of both $\delta$ and $\rho$.
-%This can easily be visualized in a $\delta$~vs.~$\rho$ plot, called the {\em decision graph}.
-%Once the cluster centers are identified, the rest of the points are assigned to the nearest clusters.
-%As a weak assignation, we choose to eliminate points from a cluster with lower density than the lowest--density border points.
-%The complete algorithm is presented in Algorithm~\ref{alg:clusterRL}.
-%
-%\begin{algorithm}[h]
-%\setstretch{1.25}
-%\DontPrintSemicolon
-%\KwData{Distance matrix $d$}
-%\KwResult{Membership vector $\bf{m}$}
-%\BlankLine
-%\Begin{
-%  \For{$i = 1,\dots,n$}{
-%    $\rho_i \asg \sum_j \chi(d_c - d_{ij})$\;
-%    $\delta_i \asg  \displaystyle \min_{j: \rho_j > \rho_i}d_{ij}$\; 
-%    \If{$\delta_i \in \{ \emptyset, \infty \}$}{
-%      $\delta_i \asg d_{\max}$
-%    }
-%  }
-%  ${\cal C} \asg N_{C}$ first indexes from ${\rm sort}(\rho_i \delta_i)$\;
-%  ${\cal B}_{i,\dots,N_c} \asg \emptyset$\;
-%  \For{$i = 1,\dots,n$}{
-%    $m_i \asg  \displaystyle \arg \min_{j \in {\cal C}} d_{ij} $ \bf{if} $\displaystyle \min_{j \in {\cal C}} d_{ij} < \infty$\;
-%    \If{$\displaystyle \min_{j \in {\cal C} \smallsetminus m_i} d_{ij} < d_c$}{
-%    	add $i$ to ${\cal B}_{m_i}$\;
-%    }
-%    
-%  }
-%  \For{$c \in {\cal C}$}{
-%    $\rho_l \asg \displaystyle \min_{j \in {\cal B}_c} \rho_j$\;
-%    \For{$i : m_i = c, \rho_i \leq \rho_l$ }{
-%     $m_i = 0$\;
-%   }
-%  }
-%
-%  }
-%\caption{Modified RL algorithm used for clustering.}
-%\label{alg:clusterRL}
-%\end{algorithm}
-%
-%\subsection{Full Dataset}
-%
-%\subsection{Subset of Most Frequent Concepts}
-%%\begin{figure}
-%  \centerline{
-%    \includegraphics[height=7cm,width=0.6\textwidth,keepaspectratio]{../img/decision.pdf}
-%    \includegraphics[height=7cm,width=0.4\textwidth,keepaspectratio]{../img/distribution_distance.pdf}
-%  }
-%  \caption{ {\em Left}: decision graph for the subset of concepts. Highlighted points correspond to cluster centers. {\em Right}: distribution of distances between vertices on the graph.}
-%  \label{fig:decision}
-%\end{figure}
-%
-%Binarizing these couplings for $J_\bot = 0.5 > t_1$ we obtain the decision graph of fig.~\ref{fig:decision}.
-%We recognize 5 different cluster centers and, using weak assignation, we find clusters of different sizes presented in fig.~\ref{fig:clusters2-3}-\ref{fig:clusters4-5}, with highlighted cluster centers. 
-%The different clusters generally contain concepts that are semantically close to each other: for example the {\em Chemical potential} cluster groups concepts related to condensed matter physics.
-%The {\em Scalar field} cluster contains a large number of terms used in high energy physics tightly tied together. 
-%The rest of the clusters regard astrophysics.
-%The {\em Milky Way} cluster contains words specific to the observation of celestial bodies, while {\em Star} cluster contains more generic conceps like {\em Velocity}, {\em Experimental Data} and {\em Wavelength}.
-%The {\em Luminosity} cluster is not presented as it has over 400 concepts but regroups concepts mostly used in cosmology, astronomy and particle physics. 
-%
-%
-%Using strong cluster assignation, as used in~\cite{rodriguezlaio2014}, we have a very selective criterion on this particular network that leads to clusters of very few concepts. 
-%An empirical study of the graph vertexes show resonable connections, suggesting that the ontology constructed has a certain validity. 
-%However the difficulty lies in the interpretation of the results.
-%We believe our clustering techniques are not particularly apt at studying the concept network, since it is very interconnected and the definition of a cluster is not trivial and dependent on the application one is interested in. For example for a semantic classification an approach based on the minimum spanning trees might be more fruitful.
-%
-%\newpage
-%\begin{figure}[h]
-%  \centering{
-%   \includegraphics[width=\textwidth]{../matlab/clusters/cluster2.pdf}
-%   \includegraphics[width=\textwidth]{../matlab/clusters/cluster3.pdf}
-%  }
-%  \caption{{\em Milky Way} cluster ({\em top}) \& 3 ({\em Scalar field}) cluster ({\em bottom}).}
-%  \label{fig:clusters2-3}
-%  
-%\end{figure}
-%\newpage
-%\thispagestyle{empty}
-%\begin{figure}[h]
-%  \centering{
-%   \includegraphics[width=\textwidth]{../matlab/clusters/cluster4.pdf}
-%   \includegraphics[width=\textwidth]{../matlab/clusters/cluster5.pdf}
-%  }
-%  \caption{{\em Chemical potential} cluster ({\em top}) \& {\em Star} cluster ({\em bottom}).}
-%  \label{fig:clusters4-5}
-%  \thispagestyle{empty}
-%\end{figure}
-%\newpage
-
-
